@@ -56,15 +56,6 @@
         border-color: #545b62;
         color: white;
       }
-      .btnbb{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        flex-wrap: wrap;
-        margin-top: 20px;
-        gap: 8px;
-      }
 
       .btn-add {
         background-color: #adb5bd;
@@ -113,7 +104,6 @@
         background-color: #28a745;
         border-color: #28a745;
         color: white;
-        width: 200px;
       }
 
       .btn-download:hover {
@@ -133,55 +123,6 @@
         <p class="lead text-muted">
           Organize your courses by level and calculate your CGPA
         </p>
-      </div>
-
-      <!-- Previous Records Section (Optional) -->
-      <div class="card mb-4" style="background-color: #fff3cd; border: 1px solid #ffeaa7;">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title text-warning mb-0">Previous Academic Records (Optional)</h5>
-            <button class="btn btn-outline-warning btn-sm" onclick="togglePreviousRecords()" id="toggleBtn">
-              ▼ Show
-            </button>
-          </div>
-          <div id="previousRecordsSection" style="display: none;">
-            <p class="text-muted small mb-3">
-              Add your previous units and quality points from semesters/years not detailed above. 
-              This will be included in your overall CGPA calculation.
-            </p>
-            <div class="row">
-              <div class="col-md-4">
-                <label for="previousUnits" class="form-label small">Previous Total Units</label>
-                <input
-                  type="number"
-                  id="previousUnits"
-                  class="form-control"
-                  placeholder="e.g., 45"
-                  min="0"
-                  step="1"
-                  onchange="updateCalculations()"
-                />
-              </div>
-              <div class="col-md-4">
-                <label for="previousQualityPoints" class="form-label small">Previous Total Quality Points</label>
-                <input
-                  type="number"
-                  id="previousQualityPoints"
-                  class="form-control"
-                  placeholder="e.g., 180.5"
-                  min="0"
-                  step="0.01"
-                  onchange="updateCalculations()"
-                />
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small">Previous GPA</label>
-                <div class="form-control bg-light" id="previousGPA">0.00</div>
-                <small class="text-muted">Automatically calculated</small>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Add Level Section -->
@@ -224,27 +165,18 @@
         </p>
         <div class="row mt-3">
           <div class="col-md-2">
-            <small class="text-muted">Current Units</small>
-            <div class="h5 text-secondary" id="currentCredits">0</div>
-          </div>
-          <div class="col-md-2">
-            <small class="text-muted">Current Quality Points</small>
-            <div class="h5 text-secondary" id="currentQualityPoints">0.00</div>
-          </div>
-          <div class="col-md-2">
             <small class="text-muted">Total Units</small>
             <div class="h5 text-secondary" id="totalCredits">0</div>
+          </div>
+          <div class="col-md-2">
+            <small class="text-muted">Total Quality Points</small>
+            <div class="h5 text-secondary" id="totalQualityPoints">0.00</div>
           </div>
           <div class="col-md-2">
             <small class="text-muted">Number of Courses</small>
             <div class="h5 text-secondary" id="totalCourses">0</div>
           </div>
-          
-         
-        </div>
-        <div class='btnbb'> 
-
- <div class="col-md-3">
+          <div class="col-md-3">
             <button
               class="btn btn-custom btn-lg"
               onclick="calculateOverallCGPA()"
@@ -253,20 +185,19 @@
               Calculate CGPA
             </button>
           </div>
-          <div class="col-md-3" style="width: 300px;">
+          <div class="col-md-3">
             <button
               class="btn btn-download btn-lg"
               onclick="downloadPDF()"
               style="margin-top: -5px"
               id="downloadBtn"
             >
-              📄 PDF
+              📄 Download PDF
             </button>
           </div>
-
         </div>
       </div>
-      <footer class="text-white py-6" >
+        <footer class="text-white py-6" >
   <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
     <!-- Logo -->
     <div class="flex items-center space-x-2">
@@ -284,7 +215,6 @@
     </p>
   </div>
 </footer>
-
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -536,19 +466,6 @@
         });
       }
 
-      function togglePreviousRecords() {
-        const section = document.getElementById('previousRecordsSection');
-        const button = document.getElementById('toggleBtn');
-        
-        if (section.style.display === 'none') {
-          section.style.display = 'block';
-          button.innerHTML = '▲ Hide';
-        } else {
-          section.style.display = 'none';
-          button.innerHTML = '▼ Show';
-        }
-      }
-
       function updateCalculations() {
         let totalQualityPoints = 0;
         let totalCredits = 0;
@@ -611,31 +528,14 @@
       }
 
       function downloadPDF() {
-        // Get current and previous totals for PDF
-        let currentCredits = 0;
-        let currentQualityPoints = 0;
+        // Check if there are any courses added
         let totalCourses = 0;
-
         for (let levelId in levels) {
-          let levelCredits = 0;
-          let levelQualityPoints = 0;
-          for (let courseId in levels[levelId].courses) {
-            const course = levels[levelId].courses[courseId];
-            levelQualityPoints += course.gpa * course.credits;
-            levelCredits += course.credits;
-            totalCourses++;
-          }
-          currentQualityPoints += levelQualityPoints;
-          currentCredits += levelCredits;
+          totalCourses += Object.keys(levels[levelId].courses).length;
         }
 
-        const previousUnits = parseFloat(document.getElementById('previousUnits').value) || 0;
-        const previousQualityPoints = parseFloat(document.getElementById('previousQualityPoints').value) || 0;
-        const totalCredits = currentCredits + previousUnits;
-        const totalQualityPointsValue = currentQualityPoints + previousQualityPoints;
-
-        if (totalCourses === 0 && previousUnits === 0) {
-          alert("Please add some courses or previous records before downloading the PDF!");
+        if (totalCourses === 0) {
+          alert("Please add some courses before downloading the PDF!");
           return;
         }
 
@@ -662,31 +562,9 @@
         // Get CGPA and classification
         const cgpa = document.getElementById("cgpaValue").textContent;
         const classification = document.getElementById("classificationText").textContent;
-        
-        // Calculate totals including previous records
-        const previousUnits = parseFloat(document.getElementById('previousUnits').value) || 0;
-        const previousQualityPoints = parseFloat(document.getElementById('previousQualityPoints').value) || 0;
-        const previousGPA = previousUnits > 0 ? (previousQualityPoints / previousUnits) : 0;
-        
-        let currentCredits = 0;
-        let currentQualityPoints = 0;
-        let totalCourses = 0;
-
-        for (let levelId in levels) {
-          let levelCredits = 0;
-          let levelQualityPoints = 0;
-          for (let courseId in levels[levelId].courses) {
-            const course = levels[levelId].courses[courseId];
-            levelQualityPoints += course.gpa * course.credits;
-            levelCredits += course.credits;
-            totalCourses++;
-          }
-          currentQualityPoints += levelQualityPoints;
-          currentCredits += levelCredits;
-        }
-
-        const totalCredits = currentCredits + previousUnits;
-        const totalQualityPoints = currentQualityPoints + previousQualityPoints;
+        const totalCredits = document.getElementById("totalCredits").textContent;
+        const totalQualityPoints = document.getElementById("totalQualityPoints").textContent;
+        const totalCourses = document.getElementById("totalCourses").textContent;
 
         // Header
         doc.setFontSize(20);
